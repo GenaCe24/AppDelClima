@@ -26,7 +26,7 @@ data class PronosticoDia(
 )
 
 @Composable
-fun ClimaScreen(ciudad: String, onBack: () -> Unit) {
+fun ClimaView(ciudad: String, onBack: () -> Unit) {
     val contexto = LocalContext.current
 
     val pronostico = listOf(

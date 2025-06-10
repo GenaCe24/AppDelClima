@@ -12,7 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.billetera.appdelclima.ui.ciudad.CiudadScreen
 import com.billetera.appdelclima.ui.ciudad.CiudadViewModel
-import com.billetera.appdelclima.ui.clima.ClimaScreen
+import com.billetera.appdelclima.ui.clima.ClimaView
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -56,7 +56,7 @@ fun AppDelClimaApp(dataStore: DataStoreManager, viewModel: CiudadViewModel) {
 
                 composable("clima/{ciudad}") { backStackEntry ->
                     val ciudad = backStackEntry.arguments?.getString("ciudad") ?: ""
-                    ClimaScreen(ciudad = ciudad, onBack = {
+                    ClimaView(ciudad = ciudad, onBack = {
                         navController.popBackStack()
                     })
                 }
