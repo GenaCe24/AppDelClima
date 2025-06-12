@@ -17,7 +17,7 @@ sealed class Routes(val route: String) {
                 const val LOCATION_LATITUDE = "locLat"
                 const val LOCATION_LONGITUDE = "locLong"
                 const val LOCATION_NAME = "locName"
-                fun create(
+                fun createRoute(
                     locId: String,
                     locLat: Double,
                     locLong: Double,
