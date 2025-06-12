@@ -2,13 +2,13 @@ package com.billetera.appdelclima.router
 
 import androidx.navigation.NavHostController
 
-class AppRouter(private val navController: NavHostController) {
-    fun navigateTo(destination: Routes) {
+class AppRouter(private val navController: NavHostController) : Router {
+    override fun navigateTo(destination: Routes) {
         val route = getRoute(destination)
         navController.navigate(route)
     }
 
-    fun navigateBack() {
+    override fun navigateBack() {
         navController.popBackStack()
     }
 
