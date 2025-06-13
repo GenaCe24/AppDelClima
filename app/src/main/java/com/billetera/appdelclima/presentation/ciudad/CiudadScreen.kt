@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.billetera.appdelclima.LocationUtils
 import com.billetera.appdelclima.MyLocation
 import kotlinx.coroutines.launch
+import com.billetera.appdelclima.repository.modelos.Ciudad
 
 @Composable
 fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> Unit) {
@@ -70,16 +71,37 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> U
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        if (state.buscando) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            Text("Buscando ciudades...", modifier = Modifier.padding(top = 8.dp))
+        }
+
+        state.error?.let {
+            Text(
+                text = "Error: $it",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(state.ciudades) { ciudad ->
+            items(state.ciudades) { Ciudad ->
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        viewModel.onIntent(CiudadIntent.SeleccionarCiudad(ciudad))
-                        onCiudadSeleccionada(ciudad)
+                        viewModel.onIntent(CiudadIntent.SeleccionarCiudad(Ciudad.name))
+                        onCiudadSeleccionada(Ciudad.name)
                     }
                     .padding(12.dp)) {
-                    Text(text = ciudad, fontSize = 16.sp)
+                    Text(text = Ciudad.name, fontSize = 16.sp)
+
+                    Ciudad.state?.let { stateName ->
+                        if (stateName.isNotBlank()) {
+                            Text(text = stateName, fontSize = 14.sp, color = Color.Gray)
+                        }
+                    }
+                    Text(text = Ciudad.country, fontSize = 14.sp, color = Color.Gray)
+
                     Divider(modifier = Modifier.padding(top = 8.dp))
                 }
             }

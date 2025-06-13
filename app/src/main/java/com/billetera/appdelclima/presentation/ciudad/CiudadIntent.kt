@@ -5,8 +5,4 @@ sealed class CiudadIntent {
     data class BuscarCiudad(val query: String) : CiudadIntent()
     object BuscarPorUbicacion : CiudadIntent()
     data class SeleccionarCiudad(val nombre: String) : CiudadIntent()
-
-    // --- Nuevos Intents para API ---
-    data class FetchCiudades(val query: String) : CiudadIntent()
-    object FetchCurrentLocationCity : CiudadIntent()
 }

@@ -27,7 +27,7 @@ class RepositorioApi : Repositorio {
     }
 
     override suspend fun buscarCiudad(ciudad: String): List<Ciudad> {
-        val respuesta = cliente.get("http://api.openweathermap.org/geo/1.0/direct"){
+        val respuesta = cliente.get("https://api.openweathermap.org/geo/1.0/direct"){
             parameter("q",ciudad)
             parameter("limit",100)
             parameter("appid",apiKey)
