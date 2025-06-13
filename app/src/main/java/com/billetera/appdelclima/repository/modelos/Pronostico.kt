@@ -7,22 +7,14 @@ data class ForecastDTO (
     val cod: String,
     val message: Long,
     val cnt: Long,
-    val list: List<ListForecast>,
-//    val city: CityForecast,
+    val list: List<ListForecast>
 )
 
 @Serializable
 data class ListForecast(
     val dt: Long,
     val main: MainForecast,
-//    val weather: List<WeatherForecast>,
-//    val clouds: CloudsForecast,
-//    val wind: Windforecast,
-//    val visibility: Long,
-//    val pop: Double,
-//    val sys: SysForecast,
-//    val dt_txt: String,
-//    val rain: Rain,
+    val weather: List<WeatherForecast>
 )
 
 @Serializable
@@ -36,4 +28,12 @@ data class MainForecast(
     val grnd_level: Long,
     val humidity: Long,
     val temp_kf: Double,
+)
+
+@Serializable
+data class WeatherForecast(
+    val id: Long,
+    val main: String,
+    val description: String,
+    val icon: String
 )
