@@ -23,44 +23,7 @@ class MainActivity : ComponentActivity() {
         val viewModel = CiudadViewModel()
 
         setContent {
-            AppDelClimaApp(dataStore, viewModel)
-        }
-    }
-}
-
-@Composable
-fun AppDelClimaApp(dataStore: DataStoreManager, viewModel: CiudadViewModel) {
-    val navController: NavHostController = rememberNavController()
-    val coroutineScope = rememberCoroutineScope()
-    var ciudadInicial by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        val guardada = dataStore.obtenerCiudad().first()
-        if (!guardada.isNullOrEmpty()) {
-            ciudadInicial = guardada
-            navController.navigate("clima/$guardada")
-        }
-    }
-
-    MaterialTheme {
-        Surface {
-            NavHost(navController = navController, startDestination = "ciudades") {
-                composable("ciudades") {
-                    CiudadScreen(viewModel) { ciudadSeleccionada ->
-                        coroutineScope.launch {
-                            dataStore.guardarCiudad(ciudadSeleccionada)
-                            navController.navigate("clima/$ciudadSeleccionada")
-                        }
-                    }
-                }
-
-                composable("clima/{ciudad}") { backStackEntry ->
-                    val ciudad = backStackEntry.arguments?.getString("ciudad") ?: ""
-                    ClimaView(ciudad = ciudad, onBack = {
-                        navController.popBackStack()
-                    })
-                }
-            }
+            MainPage(dataStore, viewModel)
         }
     }
 }
