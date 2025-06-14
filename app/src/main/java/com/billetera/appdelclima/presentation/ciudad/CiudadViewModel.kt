@@ -2,6 +2,7 @@ package com.billetera.appdelclima.ui.ciudad
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.billetera.appdelclima.StoredCity
 import com.billetera.appdelclima.repository.Repositorio
 import com.billetera.appdelclima.repository.RepositorioApi
 import com.billetera.appdelclima.repository.modelos.Ciudad
@@ -51,12 +52,12 @@ class CiudadViewModel(
             }
 
             is CiudadIntent.SeleccionarCiudad -> {
-                _state.update { it.copy(ciudadSeleccionada = intent.nombre) }
+                _state.update { it.copy(ciudadSeleccionada = intent.ciudad) }
             }
 
             //TODO: teriminar logica por ubicacion.
             is CiudadIntent.BuscarPorUbicacion -> {
-                val ciudadFija = "Buenos Aires"
+                val ciudadFija = StoredCity(0.0f, 0.0f, "Buenos Aires")
                 _state.update { it.copy(ciudadSeleccionada = ciudadFija) }
             }
             else -> {}
