@@ -8,8 +8,8 @@ sealed class Routes(val route: String) {
 
     data class ShowWeather(
         val locId: String,
-        val locLat: Double,
-        val locLong: Double,
+        val locLat: Float,
+        val locLong: Float,
         val locName: String
     ) : Routes("show_weather/{locId}/{locLat}/{locLong}/{locName}") {
             companion object {
@@ -17,10 +17,11 @@ sealed class Routes(val route: String) {
                 const val LOCATION_LATITUDE = "locLat"
                 const val LOCATION_LONGITUDE = "locLong"
                 const val LOCATION_NAME = "locName"
+                const val ROUTE_PATTERN = "show_weather/{locId}/{locLat}/{locLong}/{locName}"
                 fun createRoute(
                     locId: String,
-                    locLat: Double,
-                    locLong: Double,
+                    locLat: Float,
+                    locLong: Float,
                     locName: String
                 ): String {
                     val encodedLocName = Uri.encode(locName)
