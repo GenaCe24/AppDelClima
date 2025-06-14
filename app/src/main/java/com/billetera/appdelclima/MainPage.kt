@@ -22,23 +22,6 @@ fun MainPage(dataStore: DataStoreManager, viewModel: CiudadViewModel) {
                 ciudadViewModel = viewModel,
                 dataStore = dataStore
             )
-//            NavHost(navController = navController, startDestination = "ciudades") {
-//                composable("ciudades") {
-//                    CiudadScreen(viewModel) { ciudadSeleccionada ->
-//                        coroutineScope.launch {
-//                            dataStore.guardarCiudad(ciudadSeleccionada)
-//                            navController.navigate("clima/$ciudadSeleccionada")
-//                        }
-//                    }
-//                }
-//
-//                composable("clima/{ciudad}") { backStackEntry ->
-//                    val ciudad = backStackEntry.arguments?.getString("ciudad") ?: ""
-//                    ClimaView(ciudad = ciudad, onBack = {
-//                        navController.popBackStack()
-//                    })
-//                }
-//            }
         }
     }
 }
