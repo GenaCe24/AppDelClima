@@ -17,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.billetera.appdelclima.LocationUtils
 import com.billetera.appdelclima.MyLocation
+import com.billetera.appdelclima.StoredCity
 import kotlinx.coroutines.launch
 import com.billetera.appdelclima.repository.modelos.Ciudad
 
 @Composable
-fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> Unit) {
+fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (Ciudad) -> Unit) {
     val state by viewModel.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val contexto = LocalContext.current
@@ -57,7 +58,7 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> U
                     val ciudadDetectada = detectarCiudadDesdeUbicacion(contexto)
                     ciudadDetectada?.let {
                         viewModel.onIntent(CiudadIntent.SeleccionarCiudad(it))
-                        onCiudadSeleccionada(it)
+                        onCiudadSeleccionada(Ciudad(it.name, it.lat, it.long, "", ""))
                     }
                 }
             },
@@ -85,22 +86,22 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> U
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(state.ciudades) { Ciudad ->
+            items(state.ciudades) { ciudad ->
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        viewModel.onIntent(CiudadIntent.SeleccionarCiudad(Ciudad.name))
-                        onCiudadSeleccionada(Ciudad.name)
+                        viewModel.onIntent(CiudadIntent.SeleccionarCiudad(StoredCity(ciudad.lat, ciudad.lon, ciudad.name)))
+                        onCiudadSeleccionada(ciudad)
                     }
                     .padding(12.dp)) {
-                    Text(text = Ciudad.name, fontSize = 16.sp)
+                    Text(text = ciudad.name, fontSize = 16.sp)
 
-                    Ciudad.state?.let { stateName ->
+                    ciudad.state?.let { stateName ->
                         if (stateName.isNotBlank()) {
                             Text(text = stateName, fontSize = 14.sp, color = Color.Gray)
                         }
                     }
-                    Text(text = Ciudad.country, fontSize = 14.sp, color = Color.Gray)
+                    Text(text = ciudad.country, fontSize = 14.sp, color = Color.Gray)
 
                     Divider(modifier = Modifier.padding(top = 8.dp))
                 }
@@ -109,7 +110,7 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (String) -> U
     }
 }
 
-suspend fun detectarCiudadDesdeUbicacion(context: Context): String? {
+suspend fun detectarCiudadDesdeUbicacion(context: Context): StoredCity? {
     val location = MyLocation.getLastKnownLocation(context)
     return location?.let {
         LocationUtils.obtenerCiudadDesdeUbicacion(context)

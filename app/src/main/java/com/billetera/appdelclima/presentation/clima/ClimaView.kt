@@ -26,7 +26,7 @@ data class PronosticoDia(
 )
 
 @Composable
-fun ClimaView(ciudad: String, onBack: () -> Unit) {
+fun ClimaView(ciudadName: String, ciudadLat: Float, ciudadLong: Float, onBack: () -> Unit) {
     val contexto = LocalContext.current
 
     val pronostico = listOf(
@@ -53,7 +53,7 @@ fun ClimaView(ciudad: String, onBack: () -> Unit) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
             }
             Text(
-                text = "Clima en $ciudad",
+                text = "Clima en $ciudadName",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(start = 8.dp)
@@ -65,7 +65,7 @@ fun ClimaView(ciudad: String, onBack: () -> Unit) {
         Button(
             onClick = {
                 val texto = buildString {
-                    append("Pronóstico para $ciudad:\n\n")
+                    append("Pronóstico para $ciudadName:\n\n")
                     pronostico.forEach {
                         append("${it.dia}: ${it.estado}, Máx: ${it.tempMax}°C, Mín: ${it.tempMin}°C, Humedad: ${it.humedad}%\n")
                     }

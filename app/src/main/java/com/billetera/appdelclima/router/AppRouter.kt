@@ -17,7 +17,6 @@ class AppRouter(private val navController: NavHostController) : Router {
             Routes.SelectCity -> destination.route
             is Routes.ShowWeather ->
                 Routes.ShowWeather.createRoute(
-                    locId = destination.locId,
                     locLat = destination.locLat,
                     locLong = destination.locLong,
                     locName = destination.locName
