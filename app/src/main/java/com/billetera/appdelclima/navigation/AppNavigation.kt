@@ -18,6 +18,7 @@ import com.billetera.appdelclima.router.Routes
 import com.billetera.appdelclima.ui.ciudad.CiudadScreen
 import com.billetera.appdelclima.ui.ciudad.CiudadViewModel
 import com.billetera.appdelclima.ui.clima.ClimaView
+import com.billetera.appdelclima.ui.settings.SettingsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -47,23 +48,27 @@ fun AppNavigation(
         navController = navController,
         startDestination = startDestination.route
     ) {
+        // TODO: instanciar el ViewModel dentro del package "ciudad", volarlo de Main
         composable(Routes.SelectCity.route) {
-            // TODO: instanciar el ViewModel dentro del package "ciudad", volarlo de Main
-            CiudadScreen(ciudadViewModel) { ciudadSeleccionada ->
-                coroutineScope.launch {
+            CiudadScreen(
+                viewModel = ciudadViewModel,
+                onCiudadSeleccionada = { ciudadSeleccionada ->
+                    coroutineScope.launch {
                         dataStore.guardarCiudad(
                             ciudadSeleccionada.lat,
                             ciudadSeleccionada.lon,
-                            ciudadSeleccionada.name )
-
+                            ciudadSeleccionada.name
+                        )
                         router.navigateTo(Routes.ShowWeather(
                             ciudadSeleccionada.lat,
                             ciudadSeleccionada.lon,
                             ciudadSeleccionada.name))
-
-                }
-            }
+                    }
+                },
+                router = router
+            )
         }
+
 
         composable(
             route = Routes.ShowWeather.ROUTE_PATTERN,
@@ -87,5 +92,14 @@ fun AppNavigation(
             )
 
         }
+
+        composable(Routes.Settings.route) {
+            SettingsScreen(
+                onBack = { router.navigateBack() },
+                dataStore = dataStore
+            )
+        }
+
+
     }
 }

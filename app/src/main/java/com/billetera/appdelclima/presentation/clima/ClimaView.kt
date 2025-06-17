@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,9 +16,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.billetera.appdelclima.DataStoreManager
 import com.billetera.appdelclima.presentation.clima.ClimaIntent
 import com.billetera.appdelclima.presentation.clima.ClimaViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 data class PronosticoDia(
     val dia: String,
@@ -36,10 +36,20 @@ fun ClimaView(
     ciudadName: String,
     ciudadLat: Float,
     ciudadLong: Float,
-    onBack: () -> Unit,
-    climaViewModel: ClimaViewModel = viewModel()
+    onBack: () -> Unit
 ) {
     val contexto = LocalContext.current
+    val viewModelOwner = LocalViewModelStoreOwner.current
+
+    val climaViewModel = remember(viewModelOwner) {
+        ClimaViewModel(
+            unidadProvider = {
+                val manager = DataStoreManager(contexto)
+                runBlocking { manager.obtenerUnidad().first() }
+            }
+        )
+    }
+
     val state by climaViewModel.state.collectAsState()
 
     LaunchedEffect(ciudadLat, ciudadLong, ciudadName) {
@@ -82,7 +92,7 @@ fun ClimaView(
             )
         }
 
-        // --- Sección de Clima Actual ---
+        // --- Clima actual ---
         state.climaActual?.let { clima ->
             Card(
                 modifier = Modifier
@@ -98,8 +108,7 @@ fun ClimaView(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-
-                        text = "${clima.main.temp.toInt()}°C",
+                        text = "${clima.main.temp.toInt()}°",
                         fontSize = 48.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -116,11 +125,11 @@ fun ClimaView(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Máx", fontWeight = FontWeight.Bold)
-                            Text("${clima.main.temp_max.toInt()}°C")
+                            Text("${clima.main.temp_max.toInt()}°")
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Mín", fontWeight = FontWeight.Bold)
-                            Text("${clima.main.temp_min.toInt()}°C")
+                            Text("${clima.main.temp_min.toInt()}°")
                         }
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text("Humedad", fontWeight = FontWeight.Bold)
@@ -136,17 +145,18 @@ fun ClimaView(
         }
 
         Spacer(modifier = Modifier.height(12.dp))
+
         Button(
             onClick = {
                 val texto = buildString {
                     append("Clima actual en $ciudadName: ${state.climaActual?.weather?.firstOrNull()?.description?.replaceFirstChar { it.uppercase() }} ")
                     state.climaActual?.main?.let { main ->
-                        append("${main.temp.toInt()}°C\n")
-                        append("Máx: ${main.temp_max.toInt()}°C, Mín: ${main.temp_min.toInt()}°C, Humedad: ${main.humidity}%\n\n")
+                        append("${main.temp.toInt()}°\n")
+                        append("Máx: ${main.temp_max.toInt()}°, Mín: ${main.temp_min.toInt()}°, Humedad: ${main.humidity}%\n\n")
                     }
                     append("Pronóstico para $ciudadName:\n\n")
                     state.pronostico.forEach {
-                        append("${it.dia}: ${it.estado}, Máx: ${it.tempMax}°C, Mín: ${it.tempMin}°C, Humedad: ${it.humedad}%\n")
+                        append("${it.dia}: ${it.estado}, Máx: ${it.tempMax}°, Mín: ${it.tempMin}°, Humedad: ${it.humedad}%\n")
                     }
                 }
 
@@ -185,7 +195,7 @@ fun ClimaView(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(text = dia.dia, fontWeight = FontWeight.Bold)
-                        Text("Máx: ${dia.tempMax}°C | Mín: ${dia.tempMin}°C")
+                        Text("Máx: ${dia.tempMax}° | Mín: ${dia.tempMin}°")
                         Text("Humedad: ${dia.humedad}%")
                         Text("Estado: ${dia.estado}")
                     }

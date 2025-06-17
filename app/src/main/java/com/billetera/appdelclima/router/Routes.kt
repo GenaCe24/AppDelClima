@@ -5,6 +5,7 @@ import android.net.Uri
 sealed class Routes(val route: String) {
 
     object SelectCity: Routes("select_city")
+    object Settings : Routes("settings")
 
     data class ShowWeather(
         val locLat: Float,

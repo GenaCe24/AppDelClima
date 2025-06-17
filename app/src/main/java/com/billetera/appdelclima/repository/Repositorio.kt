@@ -6,6 +6,6 @@ import com.billetera.appdelclima.repository.modelos.ListForecast
 
 interface Repositorio {
     suspend fun buscarCiudad(ciudad: String): List<Ciudad>
-    suspend fun traerClima(lat: Float, lon: Float) : Clima
-    suspend fun traerPronostico(nombre: String) : List<ListForecast>
+    suspend fun traerClima(lat: Float, lon: Float, unidad: String): Clima
+    suspend fun traerPronostico(nombre: String, unidad: String): List<ListForecast>
 }

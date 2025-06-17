@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.billetera.appdelclima.repository.Repositorio
 import com.billetera.appdelclima.repository.RepositorioApi
 import com.billetera.appdelclima.repository.modelos.ListForecast
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,8 +18,10 @@ import java.util.Locale
 import java.util.TimeZone
 
 class ClimaViewModel(
-    private val repositorio: Repositorio = RepositorioApi()
+    private val repositorio: Repositorio = RepositorioApi(),
+    private val unidadProvider: suspend () -> String
 ) : ViewModel() {
+
 
     private val _state = MutableStateFlow(ClimaState())
     val state: StateFlow<ClimaState> = _state.asStateFlow()
@@ -36,10 +39,13 @@ class ClimaViewModel(
     private fun cargarDatosDeClima(lat: Float, lon: Float, cityName: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            try {
-                val climaActual = repositorio.traerClima(lat, lon)
 
-                val pronosticoList = repositorio.traerPronostico(cityName)
+            try {
+                val unidad = unidadProvider()
+
+                val climaActual = repositorio.traerClima(lat, lon, unidad)
+                val pronosticoList = repositorio.traerPronostico(cityName, unidad)
+
 
                 val pronosticoParaUi = procesarPronosticoParaUI(pronosticoList)
 
@@ -51,7 +57,6 @@ class ClimaViewModel(
                     )
                 }
             } catch (e: Exception) {
-                Log.e("ClimaViewModel", "Error al cargar el clima: ${e.message}", e)
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -61,6 +66,7 @@ class ClimaViewModel(
             }
         }
     }
+
 
     private fun procesarPronosticoParaUI(forecastList: List<ListForecast>): List<PronosticoDiaUI> {
         val dailyForecasts = mutableListOf<PronosticoDiaUI>()

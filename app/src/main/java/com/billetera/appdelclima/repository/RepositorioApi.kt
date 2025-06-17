@@ -13,13 +13,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-
-
 class RepositorioApi : Repositorio {
     private val apiKey = "b8d9829d38209664911e678cd87a87a7"
 
-    private val cliente = HttpClient(){
-        install(ContentNegotiation){
+    private val cliente = HttpClient() {
+        install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
             })
@@ -27,48 +25,46 @@ class RepositorioApi : Repositorio {
     }
 
     override suspend fun buscarCiudad(ciudad: String): List<Ciudad> {
-        val respuesta = cliente.get("https://api.openweathermap.org/geo/1.0/direct"){
-            parameter("q",ciudad)
-            parameter("limit",100)
-            parameter("appid",apiKey)
+        val respuesta = cliente.get("https://api.openweathermap.org/geo/1.0/direct") {
+            parameter("q", ciudad)
+            parameter("limit", 100)
+            parameter("appid", apiKey)
         }
 
-        if (respuesta.status == HttpStatusCode.OK){
-            val ciudades = respuesta.body<List<Ciudad>>()
-            return ciudades
-        }else{
-            throw Exception()
-        }
-    }
-
-    override suspend fun traerClima(lat: Float, lon: Float): Clima {
-        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/weather"){
-            parameter("lat",lat)
-            parameter("lon",lon)
-            parameter("units","metric")
-            parameter("appid",apiKey)
-        }
-
-        if (respuesta.status == HttpStatusCode.OK){
-            val clima = respuesta.body<Clima>()
-            return clima
-        }else{
-            throw Exception()
+        if (respuesta.status == HttpStatusCode.OK) {
+            return respuesta.body()
+        } else {
+            throw Exception("Error al buscar ciudad")
         }
     }
 
-    override suspend fun traerPronostico(nombre: String): List<ListForecast> {
-        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/forecast"){
-            parameter("q",nombre)
-            parameter("units","metric")
-            parameter("appid",apiKey)
+    override suspend fun traerClima(lat: Float, lon: Float, unidad: String): Clima {
+        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/weather") {
+            parameter("lat", lat)
+            parameter("lon", lon)
+            parameter("units", unidad)
+            parameter("appid", apiKey)
         }
 
-        if (respuesta.status == HttpStatusCode.OK){
+        if (respuesta.status == HttpStatusCode.OK) {
+            return respuesta.body()
+        } else {
+            throw Exception("Error al obtener clima actual")
+        }
+    }
+
+    override suspend fun traerPronostico(nombre: String, unidad: String): List<ListForecast> {
+        val respuesta = cliente.get("https://api.openweathermap.org/data/2.5/forecast") {
+            parameter("q", nombre)
+            parameter("units", unidad)
+            parameter("appid", apiKey)
+        }
+
+        if (respuesta.status == HttpStatusCode.OK) {
             val forecast = respuesta.body<ForecastDTO>()
             return forecast.list
-        }else{
-            throw Exception()
+        } else {
+            throw Exception("Error al obtener pronóstico")
         }
     }
 }

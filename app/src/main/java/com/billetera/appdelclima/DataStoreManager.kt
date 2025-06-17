@@ -22,6 +22,7 @@ class DataStoreManager(private val context: Context) {
         val NAME_KEY = stringPreferencesKey("name_ultima_ciudad")
         val LATITUDE_KEY = floatPreferencesKey("latitude_ultima_ciudad")
         val LONGITUDE_KEY = floatPreferencesKey("longitude_ultima_ciudad")
+        val UNIT_KEY = stringPreferencesKey("unidad_temperatura") // "metric" o "imperial"
 
     }
 
@@ -34,6 +35,20 @@ class DataStoreManager(private val context: Context) {
             prefs[LONGITUDE_KEY] = long
         }
     }
+
+    suspend fun guardarUnidad(unidad: String) {
+        context.dataStore.edit { prefs ->
+            prefs[UNIT_KEY] = unidad
+        }
+    }
+
+
+    fun obtenerUnidad(): Flow<String> {
+        return context.dataStore.data.map { prefs ->
+            prefs[UNIT_KEY] ?: "metric" // valor por defecto
+        }
+    }
+
 
     fun obtenerCiudad(): Flow<StoredCity?> {
         return context.dataStore.data.map { prefs ->

@@ -13,15 +13,15 @@ class AppRouter(private val navController: NavHostController) : Router {
     }
 
     private fun getRoute(destination: Routes): String {
-        val route = when(destination) {
+        return when (destination) {
             Routes.SelectCity -> destination.route
-            is Routes.ShowWeather ->
-                Routes.ShowWeather.createRoute(
-                    locLat = destination.locLat,
-                    locLong = destination.locLong,
-                    locName = destination.locName
-                )
+            is Routes.ShowWeather -> Routes.ShowWeather.createRoute(
+                locLat = destination.locLat,
+                locLong = destination.locLong,
+                locName = destination.locName
+            )
+            Routes.Settings -> destination.route
         }
-        return route
     }
+
 }

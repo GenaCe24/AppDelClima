@@ -18,11 +18,17 @@ import androidx.compose.ui.unit.sp
 import com.billetera.appdelclima.LocationUtils
 import com.billetera.appdelclima.MyLocation
 import com.billetera.appdelclima.StoredCity
-import kotlinx.coroutines.launch
 import com.billetera.appdelclima.repository.modelos.Ciudad
+import com.billetera.appdelclima.router.Router
+import com.billetera.appdelclima.router.Routes
+import kotlinx.coroutines.launch
 
 @Composable
-fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (Ciudad) -> Unit) {
+fun CiudadScreen(
+    viewModel: CiudadViewModel,
+    onCiudadSeleccionada: (Ciudad) -> Unit,
+    router: Router
+) {
     val state by viewModel.state.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
     val contexto = LocalContext.current
@@ -85,7 +91,7 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (Ciudad) -> U
             )
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
             items(state.ciudades) { ciudad ->
                 Column(modifier = Modifier
                     .fillMaxWidth()
@@ -95,17 +101,25 @@ fun CiudadScreen(viewModel: CiudadViewModel, onCiudadSeleccionada: (Ciudad) -> U
                     }
                     .padding(12.dp)) {
                     Text(text = ciudad.name, fontSize = 16.sp)
-
                     ciudad.state?.let { stateName ->
                         if (stateName.isNotBlank()) {
                             Text(text = stateName, fontSize = 14.sp, color = Color.Gray)
                         }
                     }
                     Text(text = ciudad.country, fontSize = 14.sp, color = Color.Gray)
-
                     Divider(modifier = Modifier.padding(top = 8.dp))
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Botón para ir a configuración
+        Button(
+            onClick = { router.navigateTo(Routes.Settings) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Ir a Configuración")
         }
     }
 }
