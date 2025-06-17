@@ -23,6 +23,8 @@ class DataStoreManager(private val context: Context) {
         val LATITUDE_KEY = floatPreferencesKey("latitude_ultima_ciudad")
         val LONGITUDE_KEY = floatPreferencesKey("longitude_ultima_ciudad")
         val UNIT_KEY = stringPreferencesKey("unidad_temperatura") // "metric" o "imperial"
+        val HISTORY_KEY = stringPreferencesKey("historial_ciudades")
+
 
     }
 
@@ -62,4 +64,41 @@ class DataStoreManager(private val context: Context) {
             }
         }
     }
+
+    suspend fun agregarCiudadAlHistorial(ciudad: StoredCity) {
+        context.dataStore.edit { prefs ->
+            val actual = prefs[HISTORY_KEY] ?: ""
+            val entrada = "${ciudad.name}|${ciudad.lat}|${ciudad.long}"
+            val ciudades = actual.split(";").filter { it.isNotBlank() && it != entrada }
+
+            val nuevas = (listOf(entrada) + ciudades).take(5) // máx 5 entradas
+
+            prefs[HISTORY_KEY] = nuevas.joinToString(";")
+        }
+    }
+
+    fun obtenerHistorial(): Flow<List<StoredCity>> {
+        return context.dataStore.data.map { prefs ->
+            val raw = prefs[HISTORY_KEY] ?: ""
+            raw.split(";").mapNotNull { entrada ->
+                val partes = entrada.split("|")
+                if (partes.size == 3) {
+                    val name = partes[0]
+                    val lat = partes[1].toFloatOrNull()
+                    val lon = partes[2].toFloatOrNull()
+                    if (lat != null && lon != null) {
+                        StoredCity(lat, lon, name)
+                    } else null
+                } else null
+            }
+        }
+    }
+
+    suspend fun borrarHistorial() {
+        context.dataStore.edit { prefs ->
+            prefs[HISTORY_KEY] = ""
+        }
+    }
+
+
 }

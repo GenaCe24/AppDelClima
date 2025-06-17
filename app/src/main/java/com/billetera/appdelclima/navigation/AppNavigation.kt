@@ -59,6 +59,14 @@ fun AppNavigation(
                             ciudadSeleccionada.lon,
                             ciudadSeleccionada.name
                         )
+                        dataStore.agregarCiudadAlHistorial(
+                            StoredCity(
+                                ciudadSeleccionada.lat,
+                                ciudadSeleccionada.lon,
+                                ciudadSeleccionada.name
+                            )
+                        )
+
                         router.navigateTo(Routes.ShowWeather(
                             ciudadSeleccionada.lat,
                             ciudadSeleccionada.lon,
@@ -96,7 +104,8 @@ fun AppNavigation(
         composable(Routes.Settings.route) {
             SettingsScreen(
                 onBack = { router.navigateBack() },
-                dataStore = dataStore
+                dataStore = dataStore,
+                router = router
             )
         }
 
