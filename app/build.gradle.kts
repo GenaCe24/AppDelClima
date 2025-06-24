@@ -74,6 +74,7 @@ dependencies {
 
     // Tests
     testImplementation(libs.junit)
+    testImplementation("io.mockk:mockk:1.14.4")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
