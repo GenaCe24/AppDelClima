@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -17,7 +21,7 @@
         android:theme="@style/Theme.AppDelClima"
         tools:targetApi="31">
 
-        <!-- ✅ OPCIONAL: esto evita errores si usás librerías legacy -->
+
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
 
         <activity

@@ -1,6 +1,7 @@
 package com.billetera.appdelclima.ui.ciudad
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,11 +62,24 @@ fun CiudadScreen(
         Button(
             onClick = {
                 coroutineScope.launch {
-                    val ciudadDetectada = detectarCiudadDesdeUbicacion(contexto)
-                    ciudadDetectada?.let {
-                        viewModel.onIntent(CiudadIntent.SeleccionarCiudad(it))
-                        onCiudadSeleccionada(Ciudad(it.name, it.lat, it.long, "", ""))
-                    }
+                    val ciudadDetectada = detectarCiudadDesdeUbicacion(contexto) ?: StoredCity(-34.6037f, -58.3816f, "Buenos Aires")
+                    viewModel.onIntent(CiudadIntent.SeleccionarCiudad(ciudadDetectada))
+                    onCiudadSeleccionada(Ciudad(ciudadDetectada.name, ciudadDetectada.lat, ciudadDetectada.long, "", ""))
+
+                    /* Reemplazar esta funcion por la anterior si tenes conexion con GPS para detectar ubicacion:
+                                        val ciudadDetectada = detectarCiudadDesdeUbicacion(contexto)
+                                        if (ciudadDetectada != null) {
+                                            Toast.makeText(
+                                                contexto,
+                                                "Detectado: ${ciudadDetectada.name} (${ciudadDetectada.lat}, ${ciudadDetectada.long})",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            viewModel.onIntent(CiudadIntent.SeleccionarCiudad(ciudadDetectada))
+                                            onCiudadSeleccionada(Ciudad(ciudadDetectada.name, ciudadDetectada.lat, ciudadDetectada.long, "", ""))
+                                        } else {
+                                            Toast.makeText(contexto, "No se pudo obtener la ubicación", Toast.LENGTH_LONG).show()
+                                        }
+                    */
                 }
             },
             modifier = Modifier.fillMaxWidth(),
