@@ -24,6 +24,7 @@ class DataStoreManager(private val context: Context) {
         val LONGITUDE_KEY = floatPreferencesKey("longitude_ultima_ciudad")
         val UNIT_KEY = stringPreferencesKey("unidad_temperatura") // "metric" o "imperial"
         val HISTORY_KEY = stringPreferencesKey("historial_ciudades")
+        val FAVORITA_KEY = stringPreferencesKey("ciudad_favorita")
 
 
     }
@@ -99,6 +100,28 @@ class DataStoreManager(private val context: Context) {
             prefs[HISTORY_KEY] = ""
         }
     }
+
+    suspend fun guardarCiudadFavorita(ciudad: StoredCity) {
+        context.dataStore.edit { prefs ->
+            prefs[FAVORITA_KEY] = "${ciudad.name}|${ciudad.lat}|${ciudad.long}"
+        }
+    }
+
+    fun obtenerCiudadFavorita(): Flow<StoredCity?> {
+        return context.dataStore.data.map { prefs ->
+            val raw = prefs[FAVORITA_KEY] ?: return@map null
+            val partes = raw.split("|")
+            if (partes.size == 3) {
+                val name = partes[0]
+                val lat = partes[1].toFloatOrNull()
+                val lon = partes[2].toFloatOrNull()
+                if (lat != null && lon != null) {
+                    StoredCity(lat, lon, name)
+                } else null
+            } else null
+        }
+    }
+
 
 
 }

@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.billetera.appdelclima.DataStoreManager
 import com.billetera.appdelclima.LocationUtils
 import com.billetera.appdelclima.MyLocation
 import com.billetera.appdelclima.StoredCity
@@ -66,7 +67,11 @@ fun CiudadScreen(
                     viewModel.onIntent(CiudadIntent.SeleccionarCiudad(ciudadDetectada))
                     onCiudadSeleccionada(Ciudad(ciudadDetectada.name, ciudadDetectada.lat, ciudadDetectada.long, "", ""))
 
-                    /* Reemplazar esta funcion por la anterior si tenes conexion con GPS para detectar ubicacion:
+                    val favorita = StoredCity(ciudadDetectada.lat, ciudadDetectada.long, ciudadDetectada.name)
+                    DataStoreManager(contexto).guardarCiudadFavorita(favorita)
+                    Toast.makeText(contexto, "Ciudad guardada como favorita", Toast.LENGTH_SHORT).show()
+                }
+                /* Reemplazar esta funcion por la anterior si tenes conexion con GPS para detectar ubicacion:
                                         val ciudadDetectada = detectarCiudadDesdeUbicacion(contexto)
                                         if (ciudadDetectada != null) {
                                             Toast.makeText(
@@ -80,7 +85,7 @@ fun CiudadScreen(
                                             Toast.makeText(contexto, "No se pudo obtener la ubicación", Toast.LENGTH_LONG).show()
                                         }
                     */
-                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C4DFF))
@@ -112,6 +117,12 @@ fun CiudadScreen(
                     .clickable {
                         viewModel.onIntent(CiudadIntent.SeleccionarCiudad(StoredCity(ciudad.lat, ciudad.lon, ciudad.name)))
                         onCiudadSeleccionada(ciudad)
+
+                        coroutineScope.launch {
+                            val favorita = StoredCity(ciudad.lat, ciudad.lon, ciudad.name)
+                            DataStoreManager(contexto).guardarCiudadFavorita(favorita)
+                            Toast.makeText(contexto, "Ciudad guardada como favorita", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .padding(12.dp)) {
                     Text(text = ciudad.name, fontSize = 16.sp)
@@ -128,7 +139,6 @@ fun CiudadScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Botón para ir a configuración
         Button(
             onClick = { router.navigateTo(Routes.Settings) },
             modifier = Modifier.fillMaxWidth()
@@ -144,3 +154,4 @@ suspend fun detectarCiudadDesdeUbicacion(context: Context): StoredCity? {
         LocationUtils.obtenerCiudadDesdeUbicacion(context)
     }
 }
+

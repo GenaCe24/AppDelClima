@@ -20,6 +20,7 @@ fun SettingsScreen(
 ) {
     val scope = rememberCoroutineScope()
     val unidadSeleccionada by dataStore.obtenerUnidad().collectAsState(initial = "metric")
+    val favorita by dataStore.obtenerCiudadFavorita().collectAsState(initial = null)
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -30,6 +31,22 @@ fun SettingsScreen(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+
+        favorita?.let {
+            Text("★ Ciudad favorita:", fontWeight = FontWeight.Bold)
+            Button(
+                onClick = {
+                    scope.launch {
+                        dataStore.guardarCiudad(it.lat, it.long, it.name)
+                        router.navigateTo(Routes.ShowWeather(it.lat, it.long, it.name))
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            ) {
+                Text(it.name)
+            }
+            Spacer(modifier = Modifier.height(24.dp))
+        }
 
         Button(onClick = onBack) {
             Text("Volver")
@@ -88,8 +105,7 @@ fun SettingsScreen(
         ) {
             Text("Borrar historial", color = Color.White)
         }
-
-
     }
 }
+
 

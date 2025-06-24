@@ -8,4 +8,5 @@ interface Repositorio {
     suspend fun buscarCiudad(ciudad: String): List<Ciudad>
     suspend fun traerClima(lat: Float, lon: Float, unidad: String): Clima
     suspend fun traerPronostico(nombre: String, unidad: String): List<ListForecast>
+
 }

@@ -67,4 +67,6 @@ class RepositorioApi : Repositorio {
             throw Exception("Error al obtener pronóstico")
         }
     }
+
+
 }
