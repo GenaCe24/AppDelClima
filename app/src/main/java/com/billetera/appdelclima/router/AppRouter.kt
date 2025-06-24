@@ -1,5 +1,6 @@
 package com.billetera.appdelclima.router
 
+import androidx.annotation.VisibleForTesting
 import androidx.navigation.NavHostController
 
 class AppRouter(private val navController: NavHostController) : Router {
@@ -12,7 +13,8 @@ class AppRouter(private val navController: NavHostController) : Router {
         navController.popBackStack()
     }
 
-    private fun getRoute(destination: Routes): String {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getRoute(destination: Routes): String {
         return when (destination) {
             Routes.SelectCity -> destination.route
             is Routes.ShowWeather -> Routes.ShowWeather.createRoute(
